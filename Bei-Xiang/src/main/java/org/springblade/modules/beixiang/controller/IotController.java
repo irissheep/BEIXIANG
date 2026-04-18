@@ -59,7 +59,7 @@ public class IotController {
 	public void construct() {
 		R<String> result = login("test035",
 			"12345035");
-		String token = result.getData();
+		token = result.getData();
 
 	}
 

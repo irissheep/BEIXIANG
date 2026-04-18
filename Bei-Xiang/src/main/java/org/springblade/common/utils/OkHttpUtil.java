@@ -146,7 +146,9 @@ public class OkHttpUtil {
 		final Headers.Builder builder = new Headers.Builder();
 		if (null != headersMap && !headersMap.isEmpty()) {
 			for (Map.Entry<String, String> entry : headersMap.entrySet()) {
-				builder.add(entry.getKey(), entry.getValue());
+				if (entry.getKey() != null && entry.getValue() != null) {
+					builder.add(entry.getKey(), entry.getValue());
+				}
 			}
 		}
 		headers = builder.build();

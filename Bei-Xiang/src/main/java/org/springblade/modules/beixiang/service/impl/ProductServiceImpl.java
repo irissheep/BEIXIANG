@@ -166,7 +166,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
 		Map<String, String> header = new HashMap<>();
 		header.put("client_type", "web");
 		header.put("Content-Type", "application/json");
-		header.put("token", iotController.getToken());
+		String token = iotController.getToken();
+		if (token != null) {
+			header.put("token", token);
+		}
 
 		String deviceId = dictBizService.getValue(DictConstant.DEVICE_ID, "shelf1");
 		String url = ServiceConstant.BASE_URL + "/api/mqtt/async/" + deviceId + "/commands";
@@ -184,6 +187,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
 			int code = object.getInteger("code");
 			if (code == 50014) {
 				iotController.login("test035", "12345035");
+				token = iotController.getToken();
+				header.put("token", token);
+				// 重新发送指令
+				if (ServiceConstant.STATUS_ON.equals(status)) {
+					response = OkHttpUtil.postJson(url, ServiceConstant.COMMAND_ON, header);
+				} else {
+					response = OkHttpUtil.postJson(url, ServiceConstant.COMMAND_OFF, header);
+				}
+				s = response.body().string();
+				object = JSON.parseObject(s);
+				code = object.getInteger("code");
 			}
 			if (code == 2000 || code == 50014) {
 				iotSuccess = true;
